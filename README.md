@@ -55,7 +55,7 @@ To exit fullscreen:
 
 ```bash
 pip install pyinstaller
-pyinstaller --noconfirm --clean --windowed --name MemoScreen main.py
+pyinstaller --noconfirm --clean --windowed --onefile --name MemoScreen main.py
 ```
 
 ## Structure
