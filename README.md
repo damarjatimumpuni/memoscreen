@@ -63,6 +63,6 @@ Memo Screen/
 └── README.md
 ```
 
-## Keterbatasan
+## Limitation
 
 - Support main monitor only
