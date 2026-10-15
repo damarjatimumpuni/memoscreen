@@ -6,7 +6,6 @@ when you're at work? Leave a memo on your screen:
 **AT MASJID**, **OUT FOR MEETING**, or **DON'T TURN OFF, SHUT DOWN AUTOMATICALLY**.
 
 > Note: This is not a screensaver
-> Windows (`.scr`).
 
 ## Feature
 
