@@ -20,13 +20,13 @@ when you're at work? Leave a memo on your screen:
 
 ## Screenshots
 Main interface
-main ui.png
+![Main UI](assets/main ui.png)
 
 Screenshot 1
-Screenshot 2026-10-15 153536.png
+![Screenshot 1](assets/Screenshot%202026-10-15%20153633.png)
 
 Screenshot 2
-Screenshot 2026-10-15 153633.png
+![Screenshot 2](assets/Screenshot%2026-10-15%153633.png)
 ## Requirements
 
 - Windows 10/11
