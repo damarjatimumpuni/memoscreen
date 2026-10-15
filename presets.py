@@ -5,33 +5,28 @@ without touching the GUI code.
 """
 
 STATUS_PRESETS: list[str] = [
-    "SEDANG SHOLAT",
-    "SEDANG MAKAN",
-    "SEDANG RAPAT",
-    "SEDANG ISTIRAHAT",
-    "SEDANG BEKERJA",
-    "SEDANG DINAS",
-    "SEDANG KE TOILET",
-    "SEDANG CEK LAPANGAN",
-    "SEDANG AMBIL DATA",
-    "JANGAN DIGANGGU",
+    "AT MASJID",
+    "HAVING LUNCH",
+    "OUT FOR MEETING",
+    "TOILET FOR A SEC",
+    "DON'T TURN OFF, SHUT DOWN AUTOMATICALLY",
 ]
 
 # (Display name, hex color)
 BACKGROUND_COLORS: list[tuple[str, str]] = [
-    ("Hitam", "#101418"),
-    ("Hijau", "#07583D"),
-    ("Biru", "#173B78"),
-    ("Ungu", "#43216B"),
-    ("Merah", "#55231F"),
+    ("Black", "#101418"),
+    ("Green", "#07583D"),
+    ("Blue", "#173B78"),
+    ("Magenta", "#43216B"),
+    ("Red", "#55231F"),
     ("Slate", "#263548"),
 ]
 
 TEXT_COLORS: list[tuple[str, str]] = [
-    ("Putih", "#FFFFFF"),
-    ("Kuning", "#FFD84D"),
-    ("Hijau Muda", "#7BE0A3"),
-    ("Hitam", "#101418"),
+    ("White", "#FFFFFF"),
+    ("Yellow", "#FFD84D"),
+    ("Light Green", "#7BE0A3"),
+    ("Black", "#101418"),
 ]
 
 DEFAULT_STATUS = STATUS_PRESETS[0]

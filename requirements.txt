@@ -1,5 +1,3 @@
-# Status Screen Saver hanya menggunakan pustaka standar Python.
-# Tidak ada dependensi pihak ketiga yang wajib diinstal.
 #
-# Opsional, untuk membuat executable Windows:
+# Optional, to create windows executable:
 # pyinstaller>=5.0

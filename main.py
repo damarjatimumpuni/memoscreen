@@ -1,4 +1,4 @@
-"""Status Screen Saver — application entry point and main control window."""
+"""Memo Screen — application entry point and main control window."""
 
 import logging
 import sys
@@ -26,7 +26,7 @@ def _enable_dpi_awareness() -> None:
         pass
 
 
-class StatusScreenSaverApp:
+class MemoScreenApp:
     """The main control window."""
 
     def __init__(self, root: tk.Tk) -> None:
@@ -42,7 +42,7 @@ class StatusScreenSaverApp:
         self._build_ui()
         self._load_ui_from_config()
         self._update_buttons()
-        self._set_indicator("Aplikasi siap")
+        self._set_indicator("Application Ready")
 
         self.root.update_idletasks()
         self.root.eval("tk::PlaceWindow . center")
@@ -65,7 +65,7 @@ class StatusScreenSaverApp:
             row=0, column=0, columnspan=2, sticky="w", pady=(0, 16)
         )
 
-        ttk.Label(outer, text="Template Status").grid(row=1, column=0, columnspan=2, sticky="w")
+        ttk.Label(outer, text="Template Messages").grid(row=1, column=0, columnspan=2, sticky="w")
         self.status_var = tk.StringVar()
         self.status_combo = ttk.Combobox(
             outer,
@@ -77,7 +77,7 @@ class StatusScreenSaverApp:
         self.status_combo.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(4, 12))
         self.status_combo.bind("<<ComboboxSelected>>", lambda _event: self._on_preference_changed())
 
-        ttk.Label(outer, text="Tambahkan Status Lain").grid(
+        ttk.Label(outer, text="Custom Text (Override Template)").grid(
             row=3, column=0, columnspan=2, sticky="w"
         )
         self.custom_var = tk.StringVar()
@@ -85,7 +85,7 @@ class StatusScreenSaverApp:
         self.custom_entry.grid(row=4, column=0, columnspan=2, sticky="ew", pady=(4, 12))
         self.custom_var.trace_add("write", lambda *_args: self._on_preference_changed())
 
-        ttk.Label(outer, text="Warna Latar").grid(
+        ttk.Label(outer, text="Background Color").grid(
             row=5, column=0, columnspan=2, sticky="w", pady=(0, 4)
         )
         self.bg_color_var = tk.StringVar()
@@ -94,7 +94,7 @@ class StatusScreenSaverApp:
             outer, 6, presets.BACKGROUND_COLORS, self.bg_name_var, self._select_background_color
         )
 
-        ttk.Label(outer, text="Warna Teks").grid(
+        ttk.Label(outer, text="Text Color").grid(
             row=7, column=0, columnspan=2, sticky="w", pady=(12, 4)
         )
         self.text_color_var = tk.StringVar()
@@ -106,7 +106,7 @@ class StatusScreenSaverApp:
         self.clock_var = tk.BooleanVar()
         ttk.Checkbutton(
             outer,
-            text="Tampilkan jam digital",
+            text="Show Digital Clock",
             variable=self.clock_var,
             command=self._on_preference_changed,
         ).grid(row=9, column=0, columnspan=2, sticky="w", pady=(12, 16))
@@ -263,7 +263,7 @@ class StatusScreenSaverApp:
 def main() -> None:
     _enable_dpi_awareness()
     root = tk.Tk()
-    StatusScreenSaverApp(root)
+    MemoScreenApp(root)
     root.mainloop()
 
 

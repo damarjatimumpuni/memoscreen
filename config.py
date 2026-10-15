@@ -9,7 +9,7 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-CONFIG_DIR_NAME = "StatusScreenSaver"
+CONFIG_DIR_NAME = "MemoScreen"
 CONFIG_FILE_NAME = "config.json"
 
 _HEX_COLOR_RE = re.compile(r"^#[0-9A-Fa-f]{6}$")

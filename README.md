@@ -1,118 +1,68 @@
-# Status Screen Saver
+# Memo Screen
 
-Aplikasi desktop ringan berbasis Python/Tkinter untuk Windows 10/11 yang
-menampilkan pesan status besar dalam mode layar penuh — misalnya
-**SEDANG SHOLAT**, **SEDANG RAPAT**, atau **JANGAN DIGANGGU** — agar
-rekan kerja dapat melihat status pengguna.
+Light desktop app (Python/Tkinter) for Windows 10/11 that displays a
+fullscreen memo for your co-workers. Tired of answering "Where are you?"
+when you're at work? Leave a memo on your screen:
+**AT MASJID**, **OUT FOR MEETING**, or **DON'T TURN OFF, SHUT DOWN AUTOMATICALLY**.
 
-> Catatan: ini adalah aplikasi fullscreen biasa, bukan screensaver
+> Note: This is not a screensaver
 > Windows (`.scr`).
 
-## Fitur
+## Feature
 
-- 10 preset status (mudah diedit di `presets.py`)
-- Pesan kustom bebas; jika diisi, pesan kustom menggantikan preset
-- 6 warna latar dan 4 warna teks (swatch)
-- Jam digital `HH:MM` opsional, diperbarui tiap detik via `after()`
-- Ukuran teks otomatis menyesuaikan panjang pesan dan resolusi layar
-- Keluar dengan `ESC` atau tombol **Stop**
-- Preferensi tersimpan di `%APPDATA%\StatusScreenSaver\config.json`
-- Tanpa koneksi internet, tanpa dependensi pihak ketiga
+- Editable presets (`presets.py`)
+- Custom Memo; Overwrite presets
+- 6 Background Color and 4 Text Color (editable at `presets.py`)
+- Digital clock `HH:MM` optional
+- Text size auto adjustment
+- Press `ESC` to Stop
+- Preference saved to: `%APPDATA%\MemoScreen\config.json`
+- No Internet
 
-## Persyaratan
+## Requirements
 
 - Windows 10/11
-- Python 3.11 atau lebih baru (Tkinter sudah termasuk dalam instalasi standar)
+- Python 3.11 or newer 
 
-## Cara menjalankan
+## Run
 
 ```bash
 python main.py
 ```
 
-## Cara memakai
+## Usage
 
-1. Pilih status pada dropdown **Status**.
-2. Opsional: ketik **Pesan Kustom**. Jika tidak kosong, pesan inilah yang
-   ditampilkan.
-3. Klik swatch **Warna Latar** dan **Warna Teks**.
-4. Centang **Tampilkan jam digital** bila diperlukan.
-5. Klik **Mulai**.
+1. Select a preset messages in the **Template Messages** dropdown.
+2. Optional: Type **Custom Text**. If not empty, message will be shown.
+3. Customize Background Color **Background Color** and Text Color **Text Color**.
+4. Toogle **Show Digital Clock** if necessary.
+5. Press **Mulai** to display your memo.
 
-Untuk keluar dari mode layar penuh:
+To exit fullscreen:
 
-- Tekan `ESC`, atau
-- `Alt+Tab` ke window kontrol lalu klik **Stop** (window layar penuh
-  menutupi seluruh monitor, sehingga window kontrol hanya dapat dijangkau
-  lewat `Alt+Tab`).
+- Press `ESC`
 
-## Konfigurasi
-
-Preferensi (status terakhir, pesan kustom, warna, preferensi jam)
-disimpan otomatis di:
-
-```
-%APPDATA%\StatusScreenSaver\config.json
-```
-
-File yang hilang atau rusak tidak menyebabkan aplikasi gagal — nilai
-bawaan akan dipakai.
-
-## Membuat executable Windows
+## Create executable windows
 
 ```bash
 pip install pyinstaller
-pyinstaller --noconfirm --clean --windowed --name StatusScreenSaver main.py
+pyinstaller --noconfirm --clean --windowed --name MemoScreen main.py
 ```
 
-Hasilnya ada di `dist\StatusScreenSaver.exe`. Tidak memerlukan hak akses
-administrator dan tidak mengubah registry maupun pengaturan sistem.
-
-## Pengujian
-
-Uji coba otomatis (tanpa perlu tampilan grafis):
-
-```bash
-python -m unittest discover -s tests -v
-```
-
-Uji coba manual yang harus dilakukan di Windows:
-
-1. Window kontrol terbuka normal.
-2. Semua preset status tersedia di dropdown.
-3. Pesan kustom ditampilkan saat diisi.
-4. Pesan kosong ditolak (indikator menampilkan penjelasan).
-5. Window layar penuh menutupi monitor utama.
-6. Teks berada di tengah dan ukurannya menyesuaikan.
-7. Semua warna latar berfungsi.
-8. Jam digital berjalan dan berhenti saat window ditutup.
-9. `ESC` menutup mode layar penuh.
-10. Tombol **Stop** menutup mode layar penuh.
-11. Aplikasi tetap terbuka setelah mode layar penuh ditutup.
-12. Mode layar penuh dapat dibuka berulang kali tanpa error.
-13. Preferensi tetap tersimpan setelah aplikasi dibuka kembali.
-14. File konfigurasi rusak/hilang tidak menyebabkan crash.
-15. Aplikasi berjalan tanpa internet.
-16. Aplikasi dapat dikemas menjadi executable.
-
-## Struktur proyek
+## Structure
 
 ```
-status-screen-saver/
-├── main.py          # Titik masuk dan window kontrol
-├── presets.py       # Preset status dan warna
-├── config.py        # Muat/simpan preferensi JSON
-├── fullscreen.py    # Window layar penuh, ukuran teks adaptif, jam
-├── styles.py        # Gaya visual bersama
-├── tests/           # Uji coba headless (unittest)
+Memo Screen/
+├── main.py          # window control
+├── presets.py       # Text Preset and colors
+├── config.py        
+├── fullscreen.py    
+├── styles.py        
+├── tests/           
 ├── requirements.txt
 └── README.md
 ```
 
 ## Keterbatasan
 
-- Hanya menargetkan monitor utama (dukungan multi-monitor dapat
-  ditambahkan kemudian).
-- Tombol **Stop** memerlukan `Alt+Tab` karena window layar penuh
-  menutupi seluruh monitor; `ESC` adalah cara tercepat keluar.
-- Tidak ada instalasi otomatis, perubahan registry, maupun auto-start.
+- Support main monitor only
