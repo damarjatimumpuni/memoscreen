@@ -21,3 +21,6 @@ config.json
 # Editor
 .vscode/
 .idea/
+
+# Local spec document (not part of the app)
+base instruction.md
