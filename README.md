@@ -18,6 +18,15 @@ when you're at work? Leave a memo on your screen:
 - Preference saved to: `%APPDATA%\MemoScreen\config.json`
 - No Internet
 
+## Screenshots
+Main interface
+main ui.png
+
+Screenshot 1
+Screenshot 2026-10-15 153536.png
+
+Screenshot 2
+Screenshot 2026-10-15 153633.png
 ## Requirements
 
 - Windows 10/11
