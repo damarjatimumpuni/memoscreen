@@ -36,7 +36,7 @@ python main.py
 2. Optional: Type **Custom Text**. If not empty, message will be shown.
 3. Customize Background Color **Background Color** and Text Color **Text Color**.
 4. Toogle **Show Digital Clock** if necessary.
-5. Press **Mulai** to display your memo.
+5. Press **Start** to display your memo.
 
 To exit fullscreen:
 

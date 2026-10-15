@@ -112,7 +112,7 @@ class MemoScreenApp:
         ).grid(row=9, column=0, columnspan=2, sticky="w", pady=(12, 16))
 
         self.start_button = ttk.Button(
-            outer, text="Mulai", style="Accent.TButton", command=self._start
+            outer, text="Start", style="Accent.TButton", command=self._start
         )
         self.start_button.grid(row=10, column=0, sticky="ew", padx=(0, 6))
         self.stop_button = ttk.Button(outer, text="Stop", command=self._stop)
