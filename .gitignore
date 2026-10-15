@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Build artifacts (PyInstaller)
+build/
+dist/
+*.spec
+
+# Local configuration
+config.json
+
+# Editor
+.vscode/
+.idea/
