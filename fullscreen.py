@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import Callable
 
 from styles import FONT_FAMILY
+from winapi import lock_workstation
 
 MIN_FONT_SIZE = 16
 MAX_FONT_SIZE = 220
@@ -79,8 +80,10 @@ class FullscreenStatusWindow:
         show_clock: bool,
         on_close: Callable[[], None],
         bounce: bool = False,
+        on_locked: Callable[[], None] | None = None,
     ) -> None:
         self._on_close = on_close
+        self._on_locked = on_locked or (lambda: None)
         self._after_id: str | None = None
         self._motion_id: str | None = None
         self._closed = False
@@ -93,7 +96,7 @@ class FullscreenStatusWindow:
         self.window.attributes("-fullscreen", True)
         self.window.attributes("-topmost", True)
         self.window.protocol("WM_DELETE_WINDOW", self.close)
-        self.window.bind("<Escape>", lambda _event: self.close())
+        self.window.bind("<Escape>", lambda _event: self._handle_escape())
 
         screen_width = self.window.winfo_screenwidth()
         screen_height = self.window.winfo_screenheight()
@@ -201,6 +204,17 @@ class FullscreenStatusWindow:
             return
         self.canvas.itemconfig(self._clock_id, text=datetime.now().strftime("%H:%M"))
         self._after_id = self.window.after(1000, self._update_clock)
+
+    # ------------------------------------------------------------------
+    # Exit behavior
+    # ------------------------------------------------------------------
+
+    def _handle_escape(self) -> None:
+        """Lock the workstation; close the window if locking is unavailable."""
+        if not lock_workstation():
+            self.close()
+            return
+        self._on_locked()
 
     def close(self) -> None:
         """Close the fullscreen window and cancel all scheduled updates."""

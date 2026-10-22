@@ -2,6 +2,7 @@
 
 import logging
 import sys
+import time
 import tkinter as tk
 from tkinter import messagebox, ttk
 
@@ -9,6 +10,7 @@ import config
 import presets
 import styles
 from fullscreen import FullscreenStatusWindow
+from winapi import is_workstation_locked
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -29,6 +31,11 @@ def _enable_dpi_awareness() -> None:
 class MemoScreenApp:
     """The main control window."""
 
+    # How often the session state is checked after the screen was locked.
+    UNLOCK_POLL_MS = 250
+    # Give up watching if the lock never shows up on screen.
+    UNLOCK_GIVE_UP_SECONDS = 10
+
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.root.title("Memo Screen")
@@ -38,6 +45,9 @@ class MemoScreenApp:
         self.app_config = config.load_config()
         self.fullscreen_window: FullscreenStatusWindow | None = None
         self._loading = False
+        self._unlock_watch_id: str | None = None
+        self._saw_lock = False
+        self._lock_time = 0.0
 
         self._build_ui()
         self._load_ui_from_config()
@@ -235,6 +245,7 @@ class MemoScreenApp:
             show_clock=self.clock_var.get(),
             on_close=self._on_fullscreen_closed,
             bounce=self.bounce_var.get(),
+            on_locked=self._on_workstation_locked,
         )
         self._update_buttons()
 
@@ -249,7 +260,44 @@ class MemoScreenApp:
         active = self.fullscreen_window is not None
         self.start_button.state(["disabled"] if active else ["!disabled"])
 
+    # ------------------------------------------------------------------
+    # Locked session handling
+    # ------------------------------------------------------------------
+
+    def _on_workstation_locked(self) -> None:
+        """Watch the session and quit the app once the user logs back in."""
+        logger.info("Sesi dikunci, menunggu login kembali")
+        self._saw_lock = False
+        self._lock_time = time.monotonic()
+        self._unlock_watch_id = self.root.after(self.UNLOCK_POLL_MS, self._watch_unlock)
+
+    def _watch_unlock(self) -> None:
+        if is_workstation_locked():
+            self._saw_lock = True
+        elif self._saw_lock:
+            logger.info("Login kembali terdeteksi, menutup aplikasi")
+            self._shutdown()
+            return
+        elif time.monotonic() - self._lock_time > self.UNLOCK_GIVE_UP_SECONDS:
+            # The lock never showed up, so there is nothing to wait for.
+            self._unlock_watch_id = None
+            return
+        self._unlock_watch_id = self.root.after(self.UNLOCK_POLL_MS, self._watch_unlock)
+
+    def _shutdown(self) -> None:
+        """Close the fullscreen window and quit the application."""
+        self._cancel_unlock_watch()
+        if self.fullscreen_window is not None:
+            self.fullscreen_window.close()
+        self.root.destroy()
+
+    def _cancel_unlock_watch(self) -> None:
+        if self._unlock_watch_id is not None:
+            self.root.after_cancel(self._unlock_watch_id)
+            self._unlock_watch_id = None
+
     def _on_root_close(self) -> None:
+        self._cancel_unlock_watch()
         if self.fullscreen_window is not None:
             self.fullscreen_window.close()
         self.root.destroy()

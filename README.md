@@ -15,7 +15,7 @@ when you're at work? Leave a memo on your screen:
 - Digital clock `HH:MM` optional
 - Text size auto adjustment
 - Optional bouncing animation (retro screensaver style)
-- Press `ESC` to Stop
+- Press `ESC` to lock the screen (like `Win+L`); the app quits after you log back in
 - Preference saved to: `%APPDATA%\MemoScreen\config.json`
 - No Internet
 
@@ -51,7 +51,10 @@ python main.py
 
 To exit fullscreen:
 
-- Press `ESC`
+- Press `ESC` to lock the workstation, the same way `Win+L` does. The app
+  waits for you to log back in, then quits itself.
+- Press `Alt+F4` to close the fullscreen window and go back to the control
+  window.
 
 ## Create executable windows
 
