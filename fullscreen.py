@@ -64,7 +64,11 @@ def fit_message(text: str, screen_width: int, screen_height: int) -> tuple[tkfon
 
 
 class FullscreenStatusWindow:
-    """The fullscreen overlay that shows the status message."""
+    """The fullscreen overlay that shows the status message.
+
+    Every element is drawn on a single canvas, so no widget paints a
+    background box over the moving message and the clock has no backdrop.
+    """
 
     def __init__(
         self,
@@ -82,6 +86,7 @@ class FullscreenStatusWindow:
         self._closed = False
         self._position = [0, 0]
         self._velocity = [0.0, 0.0]
+        self._size = [0, 0]
 
         self.window = tk.Toplevel(parent)
         self.window.configure(bg=background_color)
@@ -93,40 +98,56 @@ class FullscreenStatusWindow:
         screen_width = self.window.winfo_screenwidth()
         screen_height = self.window.winfo_screenheight()
 
-        font, text = fit_message(message, screen_width, screen_height)
-        self._label = tk.Label(
+        self.canvas = tk.Canvas(
             self.window,
-            text=text,
-            font=font,
             bg=background_color,
-            fg=text_color,
+            highlightthickness=0,
+            borderwidth=0,
+            width=screen_width,
+            height=screen_height,
         )
-        # Placed with absolute coordinates only, so the bouncing loop can
-        # move the label without fighting relative placement options.
-        self._label.place(x=0, y=0, anchor="nw")
+        self.canvas.pack(fill="both", expand=True)
+
+        font, text = fit_message(message, screen_width, screen_height)
+        self._text_id = self.canvas.create_text(
+            0, 0, text=text, font=font, fill=text_color, anchor="nw"
+        )
         self.window.update_idletasks()
+        self._measure_text()
         self._position = [
-            max(0, (screen_width - self._label.winfo_reqwidth()) // 2),
-            max(0, (screen_height - self._label.winfo_reqheight()) // 2),
+            max(0, (screen_width - self._size[0]) // 2),
+            max(0, (screen_height - self._size[1]) // 2),
         ]
-        self._label.place(x=self._position[0], y=self._position[1])
+        self._move_text()
 
         if show_clock:
             clock_size = max(16, screen_height // 30)
-            self.clock_label = tk.Label(
-                self.window,
+            self._clock_id = self.canvas.create_text(
+                screen_width / 2,
+                screen_height * CLOCK_Y_FRACTION,
                 text="",
                 font=(FONT_FAMILY, clock_size, "bold"),
-                bg=background_color,
-                fg=text_color,
+                fill=text_color,
+                anchor="center",
             )
-            self.clock_label.place(relx=0.5, rely=CLOCK_Y_FRACTION, anchor="center")
             self._update_clock()
 
         self.window.focus_force()
 
         if bounce:
             self._motion_id = self.window.after(50, self._start_motion)
+
+    # ------------------------------------------------------------------
+    # Canvas helpers
+    # ------------------------------------------------------------------
+
+    def _measure_text(self) -> None:
+        """Read the on-screen size of the message text."""
+        x1, y1, x2, y2 = self.canvas.bbox(self._text_id)
+        self._size = [int(x2 - x1), int(y2 - y1)]
+
+    def _move_text(self) -> None:
+        self.canvas.coords(self._text_id, self._position[0], self._position[1])
 
     # ------------------------------------------------------------------
     # Bouncing motion
@@ -148,8 +169,7 @@ class FullscreenStatusWindow:
             return
         screen_width = self.window.winfo_screenwidth()
         screen_height = self.window.winfo_screenheight()
-        width = self._label.winfo_reqwidth()
-        height = self._label.winfo_reqheight()
+        width, height = self._size
 
         x = self._position[0] + self._velocity[0]
         y = self._position[1] + self._velocity[1]
@@ -169,7 +189,7 @@ class FullscreenStatusWindow:
             self._velocity[1] = -abs(self._velocity[1])
 
         self._position = [int(x), int(y)]
-        self._label.place(x=self._position[0], y=self._position[1])
+        self._move_text()
         self._motion_id = self.window.after(FRAME_MS, self._animate)
 
     # ------------------------------------------------------------------
@@ -179,7 +199,7 @@ class FullscreenStatusWindow:
     def _update_clock(self) -> None:
         if self._closed:
             return
-        self.clock_label.config(text=datetime.now().strftime("%H:%M"))
+        self.canvas.itemconfig(self._clock_id, text=datetime.now().strftime("%H:%M"))
         self._after_id = self.window.after(1000, self._update_clock)
 
     def close(self) -> None:

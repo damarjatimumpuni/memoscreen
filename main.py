@@ -3,7 +3,7 @@
 import logging
 import sys
 import tkinter as tk
-from tkinter import ttk
+from tkinter import messagebox, ttk
 
 import config
 import presets
@@ -42,7 +42,6 @@ class MemoScreenApp:
         self._build_ui()
         self._load_ui_from_config()
         self._update_buttons()
-        self._set_indicator("Application Ready")
 
         self.root.update_idletasks()
         self.root.eval("tk::PlaceWindow . center")
@@ -119,17 +118,12 @@ class MemoScreenApp:
             command=self._on_preference_changed,
         ).grid(row=10, column=0, columnspan=2, sticky="w", pady=(0, 16))
 
+        button_row = ttk.Frame(outer)
+        button_row.grid(row=11, column=0, columnspan=2, sticky="")
         self.start_button = ttk.Button(
-            outer, text="Start", style="Accent.TButton", command=self._start
+            button_row, text="Start", style="Accent.TButton", command=self._start, width=16
         )
-        self.start_button.grid(row=11, column=0, sticky="ew", padx=(0, 6))
-        self.stop_button = ttk.Button(outer, text="Stop", command=self._stop)
-        self.stop_button.grid(row=11, column=1, sticky="ew", padx=(6, 0))
-
-        self.indicator_var = tk.StringVar(value="")
-        ttk.Label(outer, textvariable=self.indicator_var, style="Muted.TLabel").grid(
-            row=12, column=0, columnspan=2, sticky="w", pady=(14, 0)
-        )
+        self.start_button.pack()
 
     def _build_swatch_row(
         self,
@@ -228,7 +222,7 @@ class MemoScreenApp:
 
         message = self.custom_var.get().strip() or self.status_var.get().strip()
         if not message:
-            self._set_indicator("Pesan tidak boleh kosong")
+            messagebox.showwarning("Memo Screen", "Please enter a message before starting.")
             return
 
         self._on_preference_changed()
@@ -243,16 +237,10 @@ class MemoScreenApp:
             bounce=self.bounce_var.get(),
         )
         self._update_buttons()
-        self._set_indicator("Layar penuh aktif — tekan ESC untuk keluar")
-
-    def _stop(self) -> None:
-        if self.fullscreen_window is not None:
-            self.fullscreen_window.close()
 
     def _on_fullscreen_closed(self) -> None:
         self.fullscreen_window = None
         self._update_buttons()
-        self._set_indicator("Aplikasi siap")
         self.root.deiconify()
         self.root.lift()
         self.root.focus_force()
@@ -260,10 +248,6 @@ class MemoScreenApp:
     def _update_buttons(self) -> None:
         active = self.fullscreen_window is not None
         self.start_button.state(["disabled"] if active else ["!disabled"])
-        self.stop_button.state(["!disabled"] if active else ["disabled"])
-
-    def _set_indicator(self, text: str) -> None:
-        self.indicator_var.set(f"● {text}")
 
     def _on_root_close(self) -> None:
         if self.fullscreen_window is not None:

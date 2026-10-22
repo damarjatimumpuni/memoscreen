@@ -52,7 +52,6 @@ python main.py
 To exit fullscreen:
 
 - Press `ESC`
-- Or press **Stop** in the control window
 
 ## Create executable windows
 
