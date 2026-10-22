@@ -1,5 +1,7 @@
-"""Fullscreen display: adaptive text sizing, digital clock, and exit behavior."""
+"""Fullscreen display: adaptive text sizing, bouncing motion, digital clock, and exit behavior."""
 
+import math
+import random
 import tkinter as tk
 import tkinter.font as tkfont
 from datetime import datetime
@@ -14,6 +16,11 @@ MAX_FONT_SIZE = 220
 MAX_WIDTH_FRACTION = 0.92
 MAX_HEIGHT_FRACTION = 0.55
 CLOCK_Y_FRACTION = 0.85
+
+# Bouncing motion: frame interval in milliseconds and speed in pixels per frame.
+FRAME_MS = 20
+MIN_SPEED = 2.0
+MAX_SPEED = 6.0
 
 
 def _wrap_text(text: str, font: tkfont.Font, max_width: int) -> str:
@@ -67,10 +74,14 @@ class FullscreenStatusWindow:
         text_color: str,
         show_clock: bool,
         on_close: Callable[[], None],
+        bounce: bool = False,
     ) -> None:
         self._on_close = on_close
         self._after_id: str | None = None
+        self._motion_id: str | None = None
         self._closed = False
+        self._position = [0, 0]
+        self._velocity = [0.0, 0.0]
 
         self.window = tk.Toplevel(parent)
         self.window.configure(bg=background_color)
@@ -83,13 +94,22 @@ class FullscreenStatusWindow:
         screen_height = self.window.winfo_screenheight()
 
         font, text = fit_message(message, screen_width, screen_height)
-        tk.Label(
+        self._label = tk.Label(
             self.window,
             text=text,
             font=font,
             bg=background_color,
             fg=text_color,
-        ).place(relx=0.5, rely=0.5, anchor="center")
+        )
+        # Placed with absolute coordinates only, so the bouncing loop can
+        # move the label without fighting relative placement options.
+        self._label.place(x=0, y=0, anchor="nw")
+        self.window.update_idletasks()
+        self._position = [
+            max(0, (screen_width - self._label.winfo_reqwidth()) // 2),
+            max(0, (screen_height - self._label.winfo_reqheight()) // 2),
+        ]
+        self._label.place(x=self._position[0], y=self._position[1])
 
         if show_clock:
             clock_size = max(16, screen_height // 30)
@@ -105,6 +125,57 @@ class FullscreenStatusWindow:
 
         self.window.focus_force()
 
+        if bounce:
+            self._motion_id = self.window.after(50, self._start_motion)
+
+    # ------------------------------------------------------------------
+    # Bouncing motion
+    # ------------------------------------------------------------------
+
+    def _start_motion(self) -> None:
+        """Give the message a random direction and start the bounce loop."""
+        if self._closed:
+            return
+        screen_width = self.window.winfo_screenwidth()
+        speed = max(MIN_SPEED, min(MAX_SPEED, screen_width / 600))
+        angle = random.uniform(0, 2 * math.pi)
+        self._velocity = [speed * math.cos(angle), speed * math.sin(angle)]
+        self._animate()
+
+    def _animate(self) -> None:
+        """Move the message one step, bouncing off the screen edges."""
+        if self._closed:
+            return
+        screen_width = self.window.winfo_screenwidth()
+        screen_height = self.window.winfo_screenheight()
+        width = self._label.winfo_reqwidth()
+        height = self._label.winfo_reqheight()
+
+        x = self._position[0] + self._velocity[0]
+        y = self._position[1] + self._velocity[1]
+
+        if x <= 0:
+            x = 0
+            self._velocity[0] = abs(self._velocity[0])
+        elif x + width >= screen_width:
+            x = screen_width - width
+            self._velocity[0] = -abs(self._velocity[0])
+
+        if y <= 0:
+            y = 0
+            self._velocity[1] = abs(self._velocity[1])
+        elif y + height >= screen_height:
+            y = screen_height - height
+            self._velocity[1] = -abs(self._velocity[1])
+
+        self._position = [int(x), int(y)]
+        self._label.place(x=self._position[0], y=self._position[1])
+        self._motion_id = self.window.after(FRAME_MS, self._animate)
+
+    # ------------------------------------------------------------------
+    # Clock and cleanup
+    # ------------------------------------------------------------------
+
     def _update_clock(self) -> None:
         if self._closed:
             return
@@ -112,12 +183,14 @@ class FullscreenStatusWindow:
         self._after_id = self.window.after(1000, self._update_clock)
 
     def close(self) -> None:
-        """Close the fullscreen window and cancel any scheduled clock update."""
+        """Close the fullscreen window and cancel all scheduled updates."""
         if self._closed:
             return
         self._closed = True
-        if self._after_id is not None:
-            self.window.after_cancel(self._after_id)
-            self._after_id = None
+        for after_id in (self._after_id, self._motion_id):
+            if after_id is not None:
+                self.window.after_cancel(after_id)
+        self._after_id = None
+        self._motion_id = None
         self.window.destroy()
         self._on_close()

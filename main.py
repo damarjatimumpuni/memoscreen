@@ -109,18 +109,26 @@ class MemoScreenApp:
             text="Show Digital Clock",
             variable=self.clock_var,
             command=self._on_preference_changed,
-        ).grid(row=9, column=0, columnspan=2, sticky="w", pady=(12, 16))
+        ).grid(row=9, column=0, columnspan=2, sticky="w", pady=(12, 8))
+
+        self.bounce_var = tk.BooleanVar()
+        ttk.Checkbutton(
+            outer,
+            text="Bounce Animation",
+            variable=self.bounce_var,
+            command=self._on_preference_changed,
+        ).grid(row=10, column=0, columnspan=2, sticky="w", pady=(0, 16))
 
         self.start_button = ttk.Button(
             outer, text="Start", style="Accent.TButton", command=self._start
         )
-        self.start_button.grid(row=10, column=0, sticky="ew", padx=(0, 6))
+        self.start_button.grid(row=11, column=0, sticky="ew", padx=(0, 6))
         self.stop_button = ttk.Button(outer, text="Stop", command=self._stop)
-        self.stop_button.grid(row=10, column=1, sticky="ew", padx=(6, 0))
+        self.stop_button.grid(row=11, column=1, sticky="ew", padx=(6, 0))
 
         self.indicator_var = tk.StringVar(value="")
         ttk.Label(outer, textvariable=self.indicator_var, style="Muted.TLabel").grid(
-            row=11, column=0, columnspan=2, sticky="w", pady=(14, 0)
+            row=12, column=0, columnspan=2, sticky="w", pady=(14, 0)
         )
 
     def _build_swatch_row(
@@ -169,6 +177,7 @@ class MemoScreenApp:
             self.bg_color_var.set(cfg.background_color)
             self.text_color_var.set(cfg.text_color)
             self.clock_var.set(cfg.show_clock)
+            self.bounce_var.set(cfg.bounce)
         finally:
             self._loading = False
         self._refresh_swatches(self.bg_swatches, self.bg_name_var, self.bg_color_var.get())
@@ -182,6 +191,7 @@ class MemoScreenApp:
         self.app_config.background_color = self.bg_color_var.get()
         self.app_config.text_color = self.text_color_var.get()
         self.app_config.show_clock = self.clock_var.get()
+        self.app_config.bounce = self.bounce_var.get()
         config.save_config(self.app_config)
 
     def _select_background_color(self, hex_color: str) -> None:
@@ -230,6 +240,7 @@ class MemoScreenApp:
             text_color=self.text_color_var.get(),
             show_clock=self.clock_var.get(),
             on_close=self._on_fullscreen_closed,
+            bounce=self.bounce_var.get(),
         )
         self._update_buttons()
         self._set_indicator("Layar penuh aktif — tekan ESC untuk keluar")

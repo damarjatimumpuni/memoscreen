@@ -14,6 +14,7 @@ when you're at work? Leave a memo on your screen:
 - 6 Background Color and 4 Text Color (editable at `presets.py`)
 - Digital clock `HH:MM` optional
 - Text size auto adjustment
+- Optional bouncing animation (retro screensaver style)
 - Press `ESC` to Stop
 - Preference saved to: `%APPDATA%\MemoScreen\config.json`
 - No Internet
@@ -45,11 +46,13 @@ python main.py
 2. Optional: Type **Custom Text**. If not empty, message will be shown.
 3. Customize Background Color **Background Color** and Text Color **Text Color**.
 4. Toogle **Show Digital Clock** if necessary.
-5. Press **Start** to display your memo.
+5. Toogle **Bounce Animation** to make the memo bounce around the screen.
+6. Press **Start** to display your memo.
 
 To exit fullscreen:
 
 - Press `ESC`
+- Or press **Stop** in the control window
 
 ## Create executable windows
 

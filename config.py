@@ -29,6 +29,7 @@ class AppConfig:
     background_color: str = "#101418"
     text_color: str = "#FFFFFF"
     show_clock: bool = True
+    bounce: bool = True
 
 
 def load_config() -> AppConfig:
@@ -67,6 +68,10 @@ def load_config() -> AppConfig:
     if isinstance(show_clock, bool):
         config.show_clock = show_clock
 
+    bounce = raw.get("bounce")
+    if isinstance(bounce, bool):
+        config.bounce = bounce
+
     return config
 
 
@@ -81,6 +86,7 @@ def save_config(config: AppConfig) -> None:
             "background_color": config.background_color,
             "text_color": config.text_color,
             "show_clock": config.show_clock,
+            "bounce": config.bounce,
         }
         path = directory / CONFIG_FILE_NAME
         path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")

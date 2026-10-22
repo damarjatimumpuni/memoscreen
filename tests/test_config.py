@@ -32,6 +32,7 @@ class ConfigTests(unittest.TestCase):
             background_color="#07583D",
             text_color="#FFD84D",
             show_clock=False,
+            bounce=False,
         )
         config.save_config(cfg)
         self.assertTrue(self.config_path().exists())
@@ -54,6 +55,7 @@ class ConfigTests(unittest.TestCase):
             "background_color": "bukan-warna",
             "text_color": "#12345",
             "show_clock": "ya",
+            "bounce": "iya",
         }
         self.config_path().parent.mkdir(parents=True, exist_ok=True)
         self.config_path().write_text(json.dumps(data), encoding="utf-8")
